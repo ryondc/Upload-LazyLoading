@@ -1,0 +1,236 @@
+<!DOCTYPE>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+        <title>Upload and preview image drag drog base64 and donwload</title>
+       
+    </head>
+    <style>
+        #output{
+            width: 500px;
+            height: 500px;
+            padding-bottom: 56,25%;
+            border: 2px solid goldenrod;  
+        }
+
+
+        .blur{
+            filter: blur(50px);
+            transition: all 0.1s;
+        }
+
+        .noblur{
+            transition: all 4s;
+        }
+
+#loading{
+    width: 50px;
+    height: 50px;
+    border:5px solid green;
+    border-top-color: red;
+    border-radius: 100%;
+    animation: round 2s linear infinite;
+    display:none;
+    z-index: 1;
+}
+
+@keyframes round{
+    from{transform: rotate(0deg)}
+    to{transform: rotate(360deg)}
+}
+
+
+ .containerDiv{
+     position: relative;
+ }   
+
+
+     .container{
+         position: absolute;
+
+     }       
+
+     .a{
+         height: 20px;
+         width: 20px;
+     }
+
+     #containerDiv1{
+         height: 100px;
+         width: 100px;
+     }
+
+    </style>
+
+    <body>
+       <div >
+           <input type="file" accept="image/*" hidden="hidden" id="file" >
+           <input type="button" id="btn" value="Upload">
+           <div class="containerDiv"  >
+               <div class="container" id="loading"></div>
+                <img id="output" src=""  >
+                
+           </div>
+           <div id="containerDiv1">
+                
+           </div>
+
+       </div>
+    
+    </body>
+    <script>
+       
+        var output = document.getElementById('output');
+        var filechange = document.getElementById('file');
+        var buttonclick = document.getElementById('btn');
+        var load = document.getElementById('loading');   
+        var base64 = document.getElementById('containerDiv1');
+          
+
+        output.addEventListener('load',()=>{      
+                var op = 0.1;  // initial opacity
+            var timer = setInterval(function () {
+                if (op >= 1){
+                    clearInterval(timer);
+                }
+                output.style.opacity = op;
+                output.style.filter = 'alpha(opacity=' + op * 100 + ")";
+                op += op * 0.3;
+                output.style.display="block";
+                onloadend();
+            }, 500);  
+          
+              
+           
+           
+        })
+
+        buttonclick.addEventListener('click',()=>{
+            filechange.click();//click on type = "file" button which is hidden 
+           
+        })
+            output.addEventListener('dragover',(event)=>{
+                    event.preventDefault();
+                    console.log("dragging...");
+            })
+
+            output.addEventListener('drop',(event)=>{
+                event.preventDefault();
+                var files = event.dataTransfer.files[0];
+                var img = new Image();
+                var reader = new FileReader();
+                reader.onload= ()=>{
+                    img.src = reader.result;
+                    output.src = img.src;
+                    output.style.display="none";
+                }
+                 reader.readAsDataURL(files);
+                console.log("dropped");
+                img.onload = ()=>{    
+                    load.style.display="block";
+                }       
+                //console.log(output);
+            })
+            
+            filechange.addEventListener('change',(event)=>{
+                var reader = new FileReader();
+                var file = event[0];// choose the first one from the list of files
+                var img = new Image();
+                reader.onload = ()=>{
+                        img.src=reader.result;
+                        output.src = img.src;
+                        output.style.display="none";
+                        var a =document.createElement('a');//Converting files to base64 data URL just using JavaScript!
+                        a.setAttribute('href',reader.result);//Converting files to base64 data URL just using JavaScript!
+                        a.setAttribute('download',file);//Converting files to base64 data URL just using JavaScript!
+                        a.innerHTML="Donwload";//Converting files to base64 data URL just using JavaScript!
+                        base64.appendChild(a);//Converting files to base64 data URL just using JavaScript!
+                }                  
+               // reader.readAsText(event.target.files[0]);
+                reader.readAsDataURL(event.target.files[0]);             
+                img.onload = ()=>{    
+                    load.style.display="block";
+                }               
+            })
+
+          function onloadend(){
+              load.style.display="none";
+          }
+        
+    
+    </script>
+</html>
+
+
+
+
+Example on webapi
+ <!-- <input type="file" onchange="previewFile()"><br>
+<img src="" height="200" alt="Image preview...">
+
+<script>
+function previewFile() {
+    var preview = document.querySelector('img');
+    var file    = document.querySelector('input[type=file]').files[0];
+    var reader  = new FileReader();
+  
+    reader.addEventListener("load", function () {
+      preview.src = reader.result;
+    }, false);
+  
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  }
+
+  </script> -->
+
+
+
+Example upload file lazyload using css blur
+  <!-- <!DOCTYPE>
+<html lang="en">
+	<head>
+		<meta charset="utf-8"/>
+        <title>Upload and preview image</title>
+       
+    </head>
+    <style>
+        #output{
+            width: 500px;
+            height: 500px;
+            padding-bottom: 56,25%;
+            border: 2px solid goldenrod;  
+        }
+
+        .blur{
+            
+            transition: all 1s;
+        }
+                    
+    </style>
+
+    <body>
+       <div >
+           <input type="file" accept="image/*" onchange="upload(event)">
+           <img class="blur" id="output">
+       </div>
+    </body>
+    <script>
+        var base64;
+        function upload(event){
+            var reader = new FileReader();
+            reader.onload = () => {
+                var output = document.getElementById('output');
+                output.src = reader.result;                
+            }
+            setTimeout(()=>{
+                reader.readAsDataURL(event.target.files[0]);          
+            },3000);
+            base64 = btoa(event.target.files[0]);  
+            
+           console.log(event);         
+           console.log(base64);   
+        }       
+    </script>
+</html> -->
